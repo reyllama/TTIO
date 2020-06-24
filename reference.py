@@ -10,14 +10,27 @@ import matplotlib.pyplot as plt
 
 # Bipartite Graph Generation
 
-df = pd.read_csv('...')
-# To Sparse matrix
-raw = np.asarray(x)
-csr = csr_matrix(raw)
-G = from_biadjacency_matrix(csr)
-nx.write_adjlist(G, 'raw.adjlist')
+
+df = pd.DataFrame(
+    {'FUND': ['A1','A1', 'A1', 'A2', 'A2','A3','A4','A5'],
+     'STOCK': ['S1', 'S2', 'S3', 'S1', 'S3', 'S4', 'S4', 'S2'],
+     'WEIGHT': [10, 5, 20, 13, 19, 20, 15, 14],
+     })
+
+B = nx.Graph()
+B.add_nodes_from(df['FUND'], bipartite=0)
+B.add_nodes_from(df['STOCK'], bipartite=1)
+B.add_weighted_edges_from(
+    [(row['FUND'], row['STOCK'], row['WEIGHT']) for idx, row in df.iterrows()],
+    weight='weight')
+
+print(B.edges(data=True))
+
 
 # Random Walk Sequence Generation
+
+nx.write_adjlist(B, 'raw.adjlist')
+
 # Stock Embedding via Skipgram
 # deepwalk --input input.file --format weighted_edgelist --output output.file
 
